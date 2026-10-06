@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="AI pro vaši firmu?",
     page_icon="⚡",
     layout="centered",
-    initial_sidebar_ebar_state="collapsed"
+    initial_sidebar_state="collapsed"
 )
 
 # ── Google Sheets helper ───────────────────────────────────────────────────────
