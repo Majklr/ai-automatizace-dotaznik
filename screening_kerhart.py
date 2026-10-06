@@ -230,43 +230,59 @@ elif st.session_state.krok == 4:
         skore, nadpis,
     )
 
-    hodiny_txt = st.session_state.hodiny.replace("⏱️  ", "")
+    # Odhadovaná úspora podle bolesti (% automatizovatelné)
+    USPORA_PROCENT = {
+        "💬  Odpovídám na stále stejné dotazy zákazníků":           0.80,
+        "📋  Ručně zadávám data, objednávky nebo faktury":          0.75,
+        "📣  Vytvářím obsah a posty na sítě":                      0.60,
+        "📅  Plánuju schůzky, rezervace nebo koordinuju tým":       0.70,
+        "📈  Dělám reporty a tabulky ručně každý týden":            0.85,
+        "🔗  Kopíruju data mezi systémy které nejsou propojené":    0.90,
+        "🧾  Řeším papírování — smlouvy, výkazy, docházka":        0.70,
+    }
+    HODINY_HODNOTA = {
+        "⏱️  Méně než 3 hodiny týdně": 2,
+        "⏱️  3–10 hodin týdně":        6,
+        "⏱️  10–20 hodin týdně":       15,
+        "⏱️  20+ hodin týdně":         25,
+    }
+    BOLEST_POPIS = {
+        "💬  Odpovídám na stále stejné dotazy zákazníků":           "Odpovídání na dotazy zákazníků",
+        "📋  Ručně zadávám data, objednávky nebo faktury":          "Ruční zadávání dat a faktur",
+        "📣  Vytvářím obsah a posty na sítě":                      "Tvorba obsahu a příspěvků",
+        "📅  Plánuju schůzky, rezervace nebo koordinuju tým":       "Plánování a koordinace",
+        "📈  Dělám reporty a tabulky ručně každý týden":            "Ruční tvorba reportů",
+        "🔗  Kopíruju data mezi systémy které nejsou propojené":    "Kopírování dat mezi systémy",
+        "🧾  Řeším papírování — smlouvy, výkazy, docházka":        "Papírování a administrativa",
+    }
 
-    if uroven == "high":
-        popis = f"Na základě vašich odpovědí vidíme velký potenciál. {hodiny_txt} manuální práce každý týden = ideální kandidát pro AI automatizaci."
-        dalsi = "Doporučujeme hned vyplnit detailní audit — ukáže přesně kde a kolik ušetříte."
-        dalsi_akce = "🔍  Vyplnit detailní audit zdarma"
-    elif uroven == "medium":
-        popis = f"Potenciál tam je. {hodiny_txt} opakující se práce je hranice kde AI začíná dávat smysl."
-        dalsi = "Detailní audit odhalí 2–3 konkrétní místa kde AI pomůže nejvíc."
-        dalsi_akce = "🔍  Zkusit detailní audit"
-    else:
-        popis = "Zatím nemáme co výrazně ušetřit. AI automatizace dává největší smysl firmám s více opakující se manuální prací."
-        dalsi = "Ozvěte se znovu až bude váš tým větší nebo agendy přibyde — pak to bude mít větší efekt."
-        dalsi_akce = None
+    hodiny_tyden = HODINY_HODNOTA.get(st.session_state.hodiny, 6)
+    procent = USPORA_PROCENT.get(st.session_state.bolest, 0.70)
+    uspora_tyden = round(hodiny_tyden * procent)
+    uspora_mesic = uspora_tyden * 4
+    oblast = BOLEST_POPIS.get(st.session_state.bolest, "Opakující se úkoly")
 
     st.markdown(f"""
     <div class="res-box {uroven}">
         <div class="res-emoji">{emoji}</div>
-        <div class="res-label">Váš výsledek</div>
-        <div class="res-title">{nadpis}</div>
-        <div class="res-text">{popis}</div>
+        <div class="res-label">Odhadovaná úspora</div>
+        <div class="res-title">~{uspora_tyden} hodin týdně · ~{uspora_mesic} hodin měsíčně</div>
+        <div class="res-text">Oblast: <strong style="color:white">{oblast}</strong></div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="next-step">
-        <div class="next-label">{'Doporučený další krok' if dalsi_akce else 'Co dál'}</div>
-        <div class="next-text">{dalsi}</div>
+        <div class="next-label">Kde konkrétně</div>
+        <div class="next-text">
+            Z vašich <strong>{hodiny_tyden} hodin týdně</strong> věnovaných oblasti <em>{oblast.lower()}</em>
+            lze automatizovat přibližně <strong>{int(procent*100)} %</strong> — to je
+            <strong>{uspora_tyden} hodin každý týden</strong>, které můžete věnovat práci s vyšší hodnotou.
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    if dalsi_akce:
-        AUDIT_URL = st.secrets.get("audit_url", "http://localhost:8507") if hasattr(st, "secrets") else "http://localhost:8507"
-        st.link_button(dalsi_akce, url=AUDIT_URL, use_container_width=True, type="primary")
-        st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("🔄 Začít znovu", use_container_width=True):
         for k in defaults:
