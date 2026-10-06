@@ -2,6 +2,19 @@ import streamlit as st
 from pathlib import Path
 from datetime import datetime
 
+def ulozit_sheets(radek: list, worksheet: str) -> bool:
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+        scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = Credentials.from_service_account_info(dict(st.secrets["gcp_service_account"]), scopes=scopes)
+        gc = gspread.authorize(creds)
+        sh = gc.open("Black Man Group AI Leady")
+        sh.worksheet(worksheet).append_row(radek)
+        return True
+    except Exception:
+        return False
+
 st.set_page_config(
     page_title="AI pro Black Man Group?",
     page_icon="⚡",
@@ -139,14 +152,9 @@ elif st.session_state.krok == 3:
     uspora_tyden = round(uspora_mesic / 4)
     uspora_rok = uspora_mesic * 12
 
-    # Uložit lokálně
     cas = datetime.now().strftime("%d.%m.%Y %H:%M")
-    p = Path(__file__).parent / "leads_blackman.csv"
-    hlavicka = not p.exists()
-    with p.open("a", encoding="utf-8") as f:
-        if hlavicka:
-            f.write("Čas,Oblast,Frekvence,Tým,Úspora/měsíc\n")
-        f.write(f'"{cas}","{st.session_state.oblast}","{st.session_state.frekvence}","{st.session_state.tym}","{uspora_mesic}"\n')
+    radek = [cas, st.session_state.oblast, st.session_state.frekvence, st.session_state.tym, str(uspora_mesic)]
+    ulozit_sheets(radek, "Screening")
 
     st.markdown(f"""
     <div class="res-box">

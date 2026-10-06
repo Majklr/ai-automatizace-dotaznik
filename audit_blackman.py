@@ -2,6 +2,19 @@ import streamlit as st
 from pathlib import Path
 from datetime import datetime
 
+def ulozit_sheets(radek: list, worksheet: str) -> bool:
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+        scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = Credentials.from_service_account_info(dict(st.secrets["gcp_service_account"]), scopes=scopes)
+        gc = gspread.authorize(creds)
+        sh = gc.open("Black Man Group AI Leady")
+        sh.worksheet(worksheet).append_row(radek)
+        return True
+    except Exception:
+        return False
+
 st.set_page_config(
     page_title="Audit AI — Black Man Group",
     page_icon="🔍",
@@ -232,26 +245,20 @@ elif st.session_state.krok == 8:
     uspora_mesic     = uspora_celkem * 4
     uspora_rok       = uspora_mesic * 12
 
-    # Uložit lokálně
     cas = datetime.now().strftime("%d.%m.%Y %H:%M")
-    p = Path(__file__).parent / "audit_blackman_leads.csv"
-    hlavicka = not p.exists()
-    with p.open("a", encoding="utf-8") as f:
-        if hlavicka:
-            f.write("Čas,Akce/měsíc,Typy,Booking jak,Booking čas,Marketing jak,Marketing čas,Admin,Admin čas,Úspora/týden\n")
-        radek = [
-            cas,
-            st.session_state.akce_mesic,
-            st.session_state.akce_typy,
-            st.session_state.booking_jak,
-            st.session_state.booking_cas,
-            st.session_state.marketing_jak,
-            st.session_state.marketing_cas,
-            st.session_state.smlouvy,
-            st.session_state.smlouvy_cas,
-            str(uspora_celkem),
-        ]
-        f.write(",".join(f'"{x}"' for x in radek) + "\n")
+    radek = [
+        cas,
+        st.session_state.akce_mesic,
+        st.session_state.akce_typy,
+        st.session_state.booking_jak,
+        st.session_state.booking_cas,
+        st.session_state.marketing_jak,
+        st.session_state.marketing_cas,
+        st.session_state.smlouvy,
+        st.session_state.smlouvy_cas,
+        str(uspora_celkem),
+    ]
+    ulozit_sheets(radek, "Audit")
 
     st.markdown(f"""
     <div class="total-box">
