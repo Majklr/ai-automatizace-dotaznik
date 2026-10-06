@@ -119,7 +119,7 @@ if st.session_state.krok == 0:
     st.markdown("""
     <div class="hero">
         <div class="hero-badge">🔍 Detailní audit · 5 minut</div>
-        <h1>Filippe, pojďme projít Black Man Group do hloubky</h1>
+        <h1>Filipe, pojďme projít Black Man Group do hloubky</h1>
         <p>8 otázek o tom jak firma teď funguje. Na konci dostaneš přehled kde a kolik hodin AI ušetří — konkrétně pro vás.</p>
     </div>
     """, unsafe_allow_html=True)

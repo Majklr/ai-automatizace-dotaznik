@@ -107,7 +107,7 @@ if st.session_state.krok == 0:
     st.markdown("""
     <div class="hero">
         <div class="hero-badge">⚡ 90 sekund · zdarma</div>
-        <h1>Filippe, kde vám AI ušetří nejvíc času?</h1>
+        <h1>Filipe, kde vám AI ušetří nejvíc času?</h1>
         <p>3 otázky přímo pro Black Man Group — dostaneš konkrétní čísla, ne obecné rady.</p>
     </div>
     """, unsafe_allow_html=True)
