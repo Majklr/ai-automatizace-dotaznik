@@ -149,15 +149,13 @@ if st.session_state.krok == 0:
     email = st.text_input("Váš email", placeholder="jan@firma.cz", label_visibility="collapsed", key="i_email")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Zjistit výsledek →", type="primary"):
-        if jmeno.strip() and firma.strip() and email.strip():
-            st.session_state.jmeno = jmeno.strip()
-            st.session_state.firma = firma.strip()
-            st.session_state.email = email.strip()
-            st.session_state.krok = 1
-            st.rerun()
-        else:
-            st.warning("Vyplňte prosím všechna pole.")
+    vse_vyplneno = bool(jmeno.strip() and firma.strip() and email.strip())
+    if st.button("Zjistit výsledek →", type="primary", disabled=not vse_vyplneno):
+        st.session_state.jmeno = jmeno.strip()
+        st.session_state.firma = firma.strip()
+        st.session_state.email = email.strip()
+        st.session_state.krok = 1
+        st.rerun()
 
     st.markdown('<p style="text-align:center;font-size:.76rem;color:#94a3b8;margin-top:10px">Bez spamu · Výsledek okamžitě</p>', unsafe_allow_html=True)
 
