@@ -166,7 +166,7 @@ elif st.session_state.krok == 3:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    AUDIT_URL = st.secrets.get("audit_url_blackman", "#") if hasattr(st, "secrets") else "#"
+    AUDIT_URL = "https://blackman-audit.streamlit.app"
     if st.button("🔍  Chci přesný plán pro Black Man Group", type="primary", use_container_width=True):
         st.markdown(f'<meta http-equiv="refresh" content="0; url={AUDIT_URL}">', unsafe_allow_html=True)
 
